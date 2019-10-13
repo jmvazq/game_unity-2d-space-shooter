@@ -11,16 +11,29 @@ public class Player : MonoBehaviour
     private GameObject _laserPrefab;
 
     [SerializeField]
+    private GameObject _laserContainer;
+
+    [SerializeField]
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
 
     [SerializeField]
     private int _lives = 3;
 
+    private bool _isDamaging = false;
+
+    private SpawnManager _spawnManager;
+
     // Start is called before the first frame update
     void Start()
     {
         transform.position = new Vector3(0, 0, 0);
+
+        _spawnManager = FindObjectOfType<SpawnManager>();
+        if (_spawnManager == null)
+        {
+            Debug.Log("Spawn Manager not found!");
+        }
     }
 
     // Update is called once per frame
@@ -69,17 +82,45 @@ public class Player : MonoBehaviour
     private void FireLaser()
     {
         Vector3 posOffset = new Vector3(0, 0.8f, 0);
-        Object.Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
+        GameObject newLaser = Object.Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
+        newLaser.transform.SetParent(_laserContainer.transform);
+
         _nextFire = Time.time + _fireRate;
     }
 
-    internal void TakeDamage()
+    IEnumerator DamageFlash()
     {
+        Material mat = GetComponent<MeshRenderer>().material;
+        Color originalColor = mat.color;
+
+        mat.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        mat.color = originalColor;
+    }
+
+    IEnumerator TakeDamageCoroutine()
+    {
+        _isDamaging = true;
+
+        StartCoroutine("DamageFlash");
+        yield return new WaitForSeconds(0.25f);
+
         _lives--;
 
         if (_lives < 1)
         {
-            Destroy(this.gameObject, 0.25f);
+            _spawnManager.OnPlayerDeath();
+            Destroy(this.gameObject, 0.1f);
+        }
+
+        _isDamaging = false;
+    }
+
+    internal void TakeDamage()
+    {
+        if (!_isDamaging)
+        {
+            StartCoroutine("TakeDamageCoroutine");
         }
     }
 }

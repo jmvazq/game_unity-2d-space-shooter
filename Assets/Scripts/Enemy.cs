@@ -6,18 +6,13 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 4.0f;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    
+    private bool _isDamaging = false;
 
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
-
         float topBound = 7.0f;
         float bottomBound = -5.27f;
         float leftBound = -8.0f;
@@ -36,10 +31,34 @@ public class Enemy : MonoBehaviour
         transform.position = new Vector3(xPos, yPos, 0.0f);
     }
 
+    IEnumerator DamageFlash()
+    {
+        Material mat = GetComponent<MeshRenderer>().material;
+        Color originalColor = mat.color;
+
+        mat.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        mat.color = originalColor;
+    }
+
+    IEnumerator TakeDamageCoroutine()
+    {
+        _isDamaging = true;
+
+        StartCoroutine("DamageFlash");
+        yield return new WaitForSeconds(0.25f);
+
+        gameObject.SetActive(false);
+
+        _isDamaging = false;
+    }
+
     internal void TakeDamage()
     {
-        GetComponent<MeshRenderer>().material.color = Color.red;
-        Destroy(this.gameObject, 0.25f);
+        if (!_isDamaging)
+        {
+            StartCoroutine("TakeDamageCoroutine");
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -47,16 +66,16 @@ public class Enemy : MonoBehaviour
         if (other.tag == "Player")
         {
             Player player = other.gameObject.GetComponent<Player>();
-            if (player != null)
+            if (player != null && !_isDamaging)
             {
                 player.TakeDamage();
                 TakeDamage();
-            }         
+            }
         }
         else if (other.tag == "Laser")
         {
             Laser laser = other.gameObject.GetComponent<Laser>();
-            if (laser != null)
+            if (laser != null && !_isDamaging)
             {
                 laser.Destroy();
                 TakeDamage();
