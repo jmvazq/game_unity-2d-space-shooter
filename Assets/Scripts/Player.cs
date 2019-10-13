@@ -14,10 +14,12 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
 
+    [SerializeField]
+    private int _lives = 3;
+
     // Start is called before the first frame update
     void Start()
     {
-        // Set starting position
         transform.position = new Vector3(0, 0, 0);
     }
 
@@ -47,9 +49,9 @@ public class Player : MonoBehaviour
         float leftBound = -11.26f;
         float rightBound = 11.26f;
 
-        // horizontal screen wrap
         float xPos = transform.position.x;
 
+        // horizontal screen wrap
         if (transform.position.x < leftBound)
         {
             xPos = rightBound;
@@ -66,7 +68,18 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
-        Object.Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+        Vector3 posOffset = new Vector3(0, 0.8f, 0);
+        Object.Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
         _nextFire = Time.time + _fireRate;
+    }
+
+    internal void TakeDamage()
+    {
+        _lives--;
+
+        if (_lives < 1)
+        {
+            Destroy(this.gameObject, 0.25f);
+        }
     }
 }
