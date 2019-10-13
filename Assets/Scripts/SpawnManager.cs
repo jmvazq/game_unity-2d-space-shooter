@@ -57,7 +57,7 @@ public class SpawnManager : MonoBehaviour
     {
         while(_spawnEnabled)
         {
-            SpawnEnemies(2);
+            SpawnEnemies(1);
             yield return new WaitForSeconds(_spawnRate);
         }
     }

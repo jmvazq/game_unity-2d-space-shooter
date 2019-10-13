@@ -58,9 +58,9 @@ public class Player : MonoBehaviour
 
         // Restrict player position based on screen / level boundaries
         float topBound = 0f;
-        float bottomBound = -3.8f;
-        float leftBound = -11.26f;
-        float rightBound = 11.26f;
+        float bottomBound = -3.5f;
+        float leftBound = -11.18f;
+        float rightBound = -leftBound;
 
         float xPos = transform.position.x;
 
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
-        Vector3 posOffset = new Vector3(0, 0.8f, 0);
+        Vector3 posOffset = new Vector3(0, 1.05f, 0);
         GameObject newLaser = Object.Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
         newLaser.transform.SetParent(_laserContainer.transform);
 
@@ -90,7 +90,7 @@ public class Player : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
-        Material mat = GetComponent<MeshRenderer>().material;
+        Material mat = GetComponent<SpriteRenderer>().material;
         Color originalColor = mat.color;
 
         mat.color = Color.red;

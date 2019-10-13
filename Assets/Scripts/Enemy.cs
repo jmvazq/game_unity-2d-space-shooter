@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
-        Material mat = GetComponent<MeshRenderer>().material;
+        Material mat = GetComponent<SpriteRenderer>().material;
         Color originalColor = mat.color;
 
         mat.color = Color.red;
@@ -61,7 +61,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
         {
