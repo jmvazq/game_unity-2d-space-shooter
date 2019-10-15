@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 public class SpawnManager : MonoBehaviour
 {
     private bool _spawnEnabled = true;
@@ -11,20 +12,19 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private GameObject _enemyContainer;
 
-    [SerializeField] private float _minEnemySpawnRate = 2.0f;
-    [SerializeField] private float _maxEnemySpawnRate = 5.0f;
+    [SerializeField] private float _minEnemySpawnRate = 3.0f;
+    [SerializeField] private float _maxEnemySpawnRate = 7.0f;
 
     [Header("Powerup Spawning")]
-    [SerializeField] private GameObject _tripleShotPowerupPrefab;
-
     [SerializeField] private float _minPowerupSpawnRate = 3.0f;
     [SerializeField] private float _maxPowerupSpawnRate = 8.0f;
+    [SerializeField] private GameObject[] _powerups;
 
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine("SpawnEnemiesRoutine");
-        StartCoroutine("SpawnPowerupsRoutine");
+        StartCoroutine(SpawnEnemiesRoutine());
+        StartCoroutine(SpawnPowerupsRoutine());
     }
 
     // Spawn enemies every few seconds
@@ -61,8 +61,9 @@ public class SpawnManager : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
+            int randomIndex = Random.Range(0, _powerups.Count());
             Vector3 posToSpawn = new Vector3(Random.Range(-8.0f, 8.0f), 7.8f, 0);
-            GameObject powerup = Instantiate(_tripleShotPowerupPrefab, posToSpawn, Quaternion.identity);
+            GameObject powerup = Instantiate(_powerups[randomIndex], posToSpawn, Quaternion.identity);
         }
     }
 

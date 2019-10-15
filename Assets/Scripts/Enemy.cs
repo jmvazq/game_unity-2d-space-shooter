@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour
     {
         _isDamaging = true;
 
-        StartCoroutine("DamageFlash");
+        StartCoroutine(DamageFlash());
         yield return new WaitForSeconds(0.25f);
 
         gameObject.SetActive(false);
@@ -57,7 +57,7 @@ public class Enemy : MonoBehaviour
     {
         if (!_isDamaging)
         {
-            StartCoroutine("TakeDamageCoroutine");
+            StartCoroutine(TakeDamageCoroutine());
         }
     }
 

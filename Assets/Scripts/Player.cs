@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,15 +7,21 @@ public class Player : MonoBehaviour
 {
     [Header("General")]
     [SerializeField] private float _speed = 3.8f;
+    [SerializeField] private float _speedBoostMultiplier = 2.0f;
 
     [SerializeField] private int _lives = 3;
     private bool _isDamaging = false;
+
+    [SerializeField] private GameObject _shieldVisualizer;
 
     [Header("Firing")]
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _laserContainer;
 
     private bool _isTripleShotActive = false;
+    private bool _isSpeedBoostActive = false;
+    private bool _isShieldActive = false;
+
     [SerializeField] private GameObject _tripleShotPrefab;
 
     [SerializeField] private float _fireRate = 0.15f;
@@ -48,6 +55,7 @@ public class Player : MonoBehaviour
     private void HandleMovement()
     {
         // Handle movement via player input
+
         float hInput = Input.GetAxis("Horizontal");
         float vInput = Input.GetAxis("Vertical");
         Vector3 newDirection = new Vector3(1 * hInput, 1 * vInput, 0);
@@ -84,14 +92,14 @@ public class Player : MonoBehaviour
         if (_isTripleShotActive)
         {
             // Fire Triple Shot
-            GameObject tripleShot = Object.Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+            GameObject tripleShot = Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
             tripleShot.transform.SetParent(_laserContainer.transform);
         }
         else
         {
             // Fire single laser
             Vector3 posOffset = new Vector3(0, 1.05f, 0);
-            GameObject newLaser = Object.Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
+            GameObject newLaser = Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
             newLaser.transform.SetParent(_laserContainer.transform);
         }
     }
@@ -110,7 +118,7 @@ public class Player : MonoBehaviour
     {
         _isDamaging = true;
 
-        StartCoroutine("DamageFlash");
+        StartCoroutine(DamageFlash());
         yield return new WaitForSeconds(0.25f);
 
         _lives--;
@@ -128,19 +136,66 @@ public class Player : MonoBehaviour
     {
         if (!_isDamaging)
         {
-            StartCoroutine("TakeDamageCoroutine");
+            if (_isShieldActive)
+            {
+                DeactivateShield();
+                return;
+            }
+
+            StartCoroutine(TakeDamageCoroutine());
         }
     }
 
     public void ActivateTripleShot()
     {
+        if (_isTripleShotActive)
+        {
+            return;
+        }
+
         _isTripleShotActive = true;
-        StartCoroutine("CooldownTripleShotRoutine");
+        StartCoroutine(CooldownTripleShotRoutine());
     }
 
     IEnumerator CooldownTripleShotRoutine()
     {
         yield return new WaitForSeconds(5.0f);
         _isTripleShotActive = false;
+    }
+
+    public void ActivateSpeedBoost()
+    {
+        if(_isSpeedBoostActive)
+        {
+            return;
+        }
+
+        _isSpeedBoostActive = true;
+        _speed *= _speedBoostMultiplier;
+        StartCoroutine(CooldownSpeedBoostRoutine());
+    }
+
+    IEnumerator CooldownSpeedBoostRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _isSpeedBoostActive = false;
+        _speed /= _speedBoostMultiplier;
+    }
+
+    public void ActivateShield()
+    {
+        if (_isShieldActive)
+        {
+            return;
+        }
+
+        _isShieldActive = true;
+        _shieldVisualizer.SetActive(true);
+    }
+
+    private void DeactivateShield()
+    {
+        _isShieldActive = false;
+        _shieldVisualizer.SetActive(false);
     }
 }
