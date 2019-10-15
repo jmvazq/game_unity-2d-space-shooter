@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Laser : MonoBehaviour
 {
-    [SerializeField]
-    private float _speed = 8.0f;
+    [Header("General")]
+    [SerializeField] private float _speed = 8.0f;
 
     // Update is called once per frame
     void Update()
@@ -16,12 +16,11 @@ public class Laser : MonoBehaviour
         // Destroy when it goes off-screen
         if (transform.position.y > 6.87f)
         {
+            if (transform.parent != null && transform.parent.tag != "Container")
+            {
+                Destroy(transform.parent.gameObject);
+            }
             Destroy(this.gameObject);
         }
-    }
-
-    internal void Destroy()
-    {
-        Destroy(this.gameObject);
     }
 }

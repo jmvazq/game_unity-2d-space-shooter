@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 105553621}
   m_Layer: 0
   m_Name: LaserContainer
-  m_TagString: Untagged
+  m_TagString: Container
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 954147228}
   m_Layer: 0
   m_Name: EnemyContainer
-  m_TagString: Untagged
+  m_TagString: Container
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -298,6 +298,8 @@ MonoBehaviour:
   _laserPrefab: {fileID: 3461586906279878168, guid: e3b9908ce121f9b4f954f73561c3ea4c,
     type: 3}
   _laserContainer: {fileID: 105553620}
+  _tripleShotPrefab: {fileID: 7143880043517510545, guid: 3c90f4a145edc0f45acf6a034882bf4d,
+    type: 3}
   _fireRate: 0.15
   _lives: 3
 --- !u!212 &1117341353
@@ -607,4 +609,9 @@ MonoBehaviour:
   _enemyPrefab: {fileID: 2225557732847013618, guid: 312604ed18ba1e4459fe5172518029f7,
     type: 3}
   _enemyContainer: {fileID: 954147227}
-  _spawnRate: 5
+  _minEnemySpawnRate: 2
+  _maxEnemySpawnRate: 5
+  _tripleShotPowerupPrefab: {fileID: 2605474596265638115, guid: d039096ae8f8a144f80b06c2e1a6636b,
+    type: 3}
+  _minPowerupSpawnRate: 3
+  _maxPowerupSpawnRate: 7

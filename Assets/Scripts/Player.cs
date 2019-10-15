@@ -4,23 +4,21 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField]
-    private float _speed = 3.8f;
+    [Header("General")]
+    [SerializeField] private float _speed = 3.8f;
 
-    [SerializeField]
-    private GameObject _laserPrefab;
-
-    [SerializeField]
-    private GameObject _laserContainer;
-
-    [SerializeField]
-    private float _fireRate = 0.15f;
-    private float _nextFire = 0.0f;
-
-    [SerializeField]
-    private int _lives = 3;
-
+    [SerializeField] private int _lives = 3;
     private bool _isDamaging = false;
+
+    [Header("Firing")]
+    [SerializeField] private GameObject _laserPrefab;
+    [SerializeField] private GameObject _laserContainer;
+
+    private bool _isTripleShotActive = false;
+    [SerializeField] private GameObject _tripleShotPrefab;
+
+    [SerializeField] private float _fireRate = 0.15f;
+    private float _nextFire = 0.0f;
 
     private SpawnManager _spawnManager;
 
@@ -57,7 +55,7 @@ public class Player : MonoBehaviour
         transform.Translate(newDirection * _speed * Time.deltaTime);
 
         // Restrict player position based on screen / level boundaries
-        float topBound = 0f;
+        float topBound = 1.0f;
         float bottomBound = -3.5f;
         float leftBound = -11.18f;
         float rightBound = -leftBound;
@@ -81,11 +79,21 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
-        Vector3 posOffset = new Vector3(0, 1.05f, 0);
-        GameObject newLaser = Object.Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
-        newLaser.transform.SetParent(_laserContainer.transform);
-
         _nextFire = Time.time + _fireRate;
+
+        if (_isTripleShotActive)
+        {
+            // Fire Triple Shot
+            GameObject tripleShot = Object.Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+            tripleShot.transform.SetParent(_laserContainer.transform);
+        }
+        else
+        {
+            // Fire single laser
+            Vector3 posOffset = new Vector3(0, 1.05f, 0);
+            GameObject newLaser = Object.Instantiate(_laserPrefab, transform.position + posOffset, Quaternion.identity);
+            newLaser.transform.SetParent(_laserContainer.transform);
+        }
     }
 
     IEnumerator DamageFlash()
@@ -122,5 +130,17 @@ public class Player : MonoBehaviour
         {
             StartCoroutine("TakeDamageCoroutine");
         }
+    }
+
+    public void ActivateTripleShot()
+    {
+        _isTripleShotActive = true;
+        StartCoroutine("CooldownTripleShotRoutine");
+    }
+
+    IEnumerator CooldownTripleShotRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _isTripleShotActive = false;
     }
 }

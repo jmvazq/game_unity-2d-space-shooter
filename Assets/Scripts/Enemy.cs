@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField]
-    private float _speed = 4.0f;
+    [Header("General")]
+    [SerializeField] private float _speed = 4.0f;
     
     private bool _isDamaging = false;
 
@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour
             Laser laser = other.gameObject.GetComponent<Laser>();
             if (laser != null && !_isDamaging)
             {
-                laser.Destroy();
+                Destroy(laser.gameObject);
                 TakeDamage();
             }
         }
