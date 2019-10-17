@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
         StartCoroutine(DamageFlash());
         yield return new WaitForSeconds(0.25f);
 
-        gameObject.SetActive(false);
+        Destroy(this.gameObject);
 
         _isDamaging = false;
     }

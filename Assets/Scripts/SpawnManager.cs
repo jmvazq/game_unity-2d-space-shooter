@@ -56,6 +56,7 @@ public class SpawnManager : MonoBehaviour
         }
 
         _pwUniqueSpawnWeights = _pwSpawnWeights.Keys.ToArray();
+        System.Array.Sort(_pwUniqueSpawnWeights);
     }
 
     // Spawn enemies every few seconds
@@ -124,6 +125,7 @@ public class SpawnManager : MonoBehaviour
                 {
                     index = _pwSpawnWeights[weight][0];
                 }
+                break;
             }
             else
             {

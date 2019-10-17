@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _type: 0
   _speed: 3
-  _dropChance: 1
+  _spawnChance: 40
 --- !u!95 &-4599197208120189316
 Animator:
   serializedVersion: 3
