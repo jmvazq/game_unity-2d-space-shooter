@@ -9,7 +9,13 @@ public class Powerup : MonoBehaviour
     [Header("General")]
     [SerializeField] private PowerupType _type;
     [SerializeField] private float _speed = 3.0f;
-    [SerializeField] private float _dropChance = 1.0f;
+
+    [SerializeField] private int _spawnChance = 10;
+    public int spawnChance {
+        get {
+            return _spawnChance;
+        }
+    }
 
     // Update is called once per frame
     void Update()

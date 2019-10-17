@@ -20,11 +20,42 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private float _maxPowerupSpawnRate = 8.0f;
     [SerializeField] private GameObject[] _powerups;
 
+    private Dictionary<int, List<int>> _pwSpawnWeights;
+    private int _pwSpawnWeightTotal = 0;
+    private int[] _pwUniqueSpawnWeights;
+
     // Start is called before the first frame update
     void Start()
     {
+        SetupPowerupSpawnWeights();
+
         StartCoroutine(SpawnEnemiesRoutine());
         StartCoroutine(SpawnPowerupsRoutine());
+    }
+
+    private void SetupPowerupSpawnWeights()
+    {
+        _pwSpawnWeights = new Dictionary<int, List<int>>() { };
+
+        for (int i = 0; i < _powerups.Length; i++)
+        {
+            Powerup powerup = _powerups[i].GetComponent<Powerup>();
+            if (powerup != null)
+            {
+                int weight = powerup.spawnChance;
+                if (_pwSpawnWeights.ContainsKey(weight))
+                {
+                    _pwSpawnWeights[weight].Add(i);
+                }
+                else
+                {
+                    _pwSpawnWeights.Add(weight, new List<int>() { i });
+                    _pwSpawnWeightTotal += weight;
+                }
+            }
+        }
+
+        _pwUniqueSpawnWeights = _pwSpawnWeights.Keys.ToArray();
     }
 
     // Spawn enemies every few seconds
@@ -61,10 +92,46 @@ public class SpawnManager : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            int randomIndex = Random.Range(0, _powerups.Count());
-            Vector3 posToSpawn = new Vector3(Random.Range(-8.0f, 8.0f), 7.8f, 0);
-            GameObject powerup = Instantiate(_powerups[randomIndex], posToSpawn, Quaternion.identity);
+            int randomIndex = GetRandomPowerupIndex();
+            if (randomIndex >= 0 && randomIndex < _powerups.Length)
+            {
+                Vector3 posToSpawn = new Vector3(Random.Range(-8.0f, 8.0f), 7.8f, 0);
+                GameObject powerup = Instantiate(_powerups[randomIndex], posToSpawn, Quaternion.identity);
+            } else
+            {
+                Debug.Log("Unspecified powerup!");
+            }
         }
+    }
+
+    private int GetRandomPowerupIndex()
+    {
+        int randomNumber = Random.Range(0, _pwSpawnWeightTotal);
+        int index = -1;
+
+        for (int i = 0; i < _pwUniqueSpawnWeights.Length; i++)
+        {
+            int weight = _pwUniqueSpawnWeights[i];
+
+            if (randomNumber <= weight)
+            {
+                var numOptions = _pwSpawnWeights[weight].Count();
+                if (numOptions > 1)
+                {
+                    index = Random.Range(0, numOptions);
+                }
+                else
+                {
+                    index = _pwSpawnWeights[weight][0];
+                }
+            }
+            else
+            {
+                randomNumber -= weight;
+            }
+        }
+
+        return index;
     }
 
     public void OnPlayerDeath()
