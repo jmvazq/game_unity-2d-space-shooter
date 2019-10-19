@@ -48,9 +48,6 @@ public class Powerup : MonoBehaviour
                     case PowerupType.Shield:
                         player.ActivateShield();
                         break;
-                    case PowerupType.Heal:
-                        // TODO
-                        break;
                     default:
                         Debug.Log("Unspecified powerup type!");
                         break;
