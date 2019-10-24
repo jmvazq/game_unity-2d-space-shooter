@@ -22,6 +22,9 @@ public class Player : MonoBehaviour
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
 
+    private IEnumerator _lastTripleShotRoutine;
+    private IEnumerator _lastSpeedBoostRoutine;
+
     [SerializeField] private GameObject _tripleShotPrefab;
 
     [SerializeField] private float _fireRate = 0.15f;
@@ -150,11 +153,14 @@ public class Player : MonoBehaviour
     {
         if (_isTripleShotActive)
         {
-            return;
+            StopCoroutine(_lastTripleShotRoutine);
+        } else
+        {
+            _isTripleShotActive = true;
         }
 
-        _isTripleShotActive = true;
-        StartCoroutine(CooldownTripleShotRoutine());
+        _lastTripleShotRoutine = CooldownTripleShotRoutine();
+        StartCoroutine(_lastTripleShotRoutine);
     }
 
     IEnumerator CooldownTripleShotRoutine()
@@ -165,14 +171,17 @@ public class Player : MonoBehaviour
 
     public void ActivateSpeedBoost()
     {
-        if(_isSpeedBoostActive)
+        if (_isSpeedBoostActive)
         {
-            return;
+            StopCoroutine(_lastSpeedBoostRoutine);
+        } else
+        {
+            _isSpeedBoostActive = true;
+            _speed *= _speedBoostMultiplier;
         }
 
-        _isSpeedBoostActive = true;
-        _speed *= _speedBoostMultiplier;
-        StartCoroutine(CooldownSpeedBoostRoutine());
+        _lastSpeedBoostRoutine = CooldownSpeedBoostRoutine();
+        StartCoroutine(_lastSpeedBoostRoutine);
     }
 
     IEnumerator CooldownSpeedBoostRoutine()

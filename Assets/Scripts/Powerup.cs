@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PowerupType { TripleShot, SpeedBoost, Shield, Heal }
+public enum PowerupType { TripleShot, SpeedBoost, Shield }
 
 public class Powerup : MonoBehaviour
 {
