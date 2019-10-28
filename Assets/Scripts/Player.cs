@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
     [SerializeField] private int _lives = 3;
     private bool _isDamaging = false;
 
+    [SerializeField] private int _score = 0;
+
     [SerializeField] private GameObject _shieldVisualizer;
 
     [Header("Firing")]
@@ -31,6 +33,10 @@ public class Player : MonoBehaviour
     private float _nextFire = 0.0f;
 
     private SpawnManager _spawnManager;
+    private UIManager _ui;
+
+    private Material _mat;
+    private Color _originalColor;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +48,15 @@ public class Player : MonoBehaviour
         {
             Debug.Log("Spawn Manager not found!");
         }
+
+        _ui = FindObjectOfType<UIManager>();
+        if (_ui == null)
+        {
+            Debug.Log("UI Manager not found!");
+        }
+
+        _mat = GetComponent<SpriteRenderer>().material;
+        _originalColor = _mat.color;
     }
 
     // Update is called once per frame
@@ -109,12 +124,12 @@ public class Player : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
-        Material mat = GetComponent<SpriteRenderer>().material;
-        Color originalColor = mat.color;
-
-        mat.color = Color.red;
-        yield return new WaitForSeconds(0.1f);
-        mat.color = originalColor;
+        if (_mat != null)
+        {
+            _mat.color = Color.red;
+            yield return new WaitForSeconds(0.1f);
+            _mat.color = _originalColor;
+        }
     }
 
     IEnumerator TakeDamageCoroutine()
@@ -125,6 +140,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
 
         _lives--;
+        _ui.UpdateLivesDisplay(_lives);
 
         if (_lives < 1)
         {
@@ -206,5 +222,14 @@ public class Player : MonoBehaviour
     {
         _isShieldActive = false;
         _shieldVisualizer.SetActive(false);
+    }
+
+    public void AddScore(int points)
+    {
+        _score += points;
+        if (_ui != null)
+        {
+            _ui.UpdateScoreText(_score);
+        }
     }
 }

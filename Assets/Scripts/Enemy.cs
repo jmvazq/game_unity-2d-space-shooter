@@ -9,6 +9,33 @@ public class Enemy : MonoBehaviour
     
     private bool _isDamaging = false;
 
+    private Material _mat;
+    private Color _originalColor = Color.white;
+
+    private Player _player;
+    private UIManager _ui;
+
+    void Start()
+    {
+        _player = FindObjectOfType<Player>();
+        if (_player == null)
+        {
+            Debug.Log("Player not found!");
+        }
+
+        _ui = FindObjectOfType<UIManager>();
+        if (_ui == null)
+        {
+            Debug.Log("UI Manager not found!");
+        }
+
+        _mat = GetComponent<SpriteRenderer>().material;
+        if (_mat != null)
+        {
+            _originalColor = _mat.color;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -33,12 +60,12 @@ public class Enemy : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
-        Material mat = GetComponent<SpriteRenderer>().material;
-        Color originalColor = mat.color;
-
-        mat.color = Color.red;
-        yield return new WaitForSeconds(0.1f);
-        mat.color = originalColor;
+        if (_mat != null)
+        {
+            _mat.color = Color.red;
+            yield return new WaitForSeconds(0.1f);
+            _mat.color = _originalColor;
+        }
     }
 
     IEnumerator TakeDamageCoroutine()
@@ -78,6 +105,10 @@ public class Enemy : MonoBehaviour
             if (laser != null && !_isDamaging)
             {
                 Destroy(laser.gameObject);
+                if (_player != null)
+                {
+                    _player.AddScore(10);
+                }
                 TakeDamage();
             }
         }
