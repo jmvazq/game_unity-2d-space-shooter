@@ -12,9 +12,10 @@ public class Player : MonoBehaviour
     [SerializeField] private int _lives = 3;
     private bool _isDamaging = false;
 
-    [SerializeField] private int _score = 0;
-
+    [SerializeField] private GameObject _leftEngine, _rightEngine;
     [SerializeField] private GameObject _shieldVisualizer;
+
+    [SerializeField] private int _score = 0;
 
     [Header("Firing")]
     [SerializeField] private GameObject _laserPrefab;
@@ -35,28 +36,34 @@ public class Player : MonoBehaviour
     private SpawnManager _spawnManager;
     private UIManager _ui;
 
-    private Material _mat;
-    private Color _originalColor;
+    private SpriteRenderer _sprite;
+    private Color _originalColor = Color.white;
 
     // Start is called before the first frame update
     void Start()
     {
         transform.position = new Vector3(0, 0, 0);
 
-        _spawnManager = FindObjectOfType<SpawnManager>();
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
         if (_spawnManager == null)
         {
             Debug.Log("Spawn Manager not found!");
         }
 
-        _ui = FindObjectOfType<UIManager>();
+        _ui = GameObject.Find("UICanvas").GetComponent<UIManager>();
         if (_ui == null)
         {
             Debug.Log("UI Manager not found!");
         }
 
-        _mat = GetComponent<SpriteRenderer>().material;
-        _originalColor = _mat.color;
+        _sprite = GetComponent<SpriteRenderer>();
+        if (_sprite == null)
+        {
+            Debug.Log(name + "'s Sprite Renderer component is missing!");
+        } else
+        {
+            _originalColor = _sprite.material.color;
+        }
     }
 
     // Update is called once per frame
@@ -124,11 +131,11 @@ public class Player : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
-        if (_mat != null)
+        if (_sprite.material != null)
         {
-            _mat.color = Color.red;
+            _sprite.material.color = Color.red;
             yield return new WaitForSeconds(0.1f);
-            _mat.color = _originalColor;
+            _sprite.material.color = _originalColor;
         }
     }
 
@@ -146,6 +153,26 @@ public class Player : MonoBehaviour
         {
             _spawnManager.OnPlayerDeath();
             Destroy(this.gameObject, 0.1f);
+        } else
+        {
+            // display random damaged engine or whichever is not active yet
+            if (_leftEngine.activeInHierarchy && _rightEngine.activeInHierarchy)
+            {
+                int random = UnityEngine.Random.Range(1, 3);
+                if (random == 1)
+                {
+                    _leftEngine.SetActive(true);
+                } else
+                {
+                    _rightEngine.SetActive(true);
+                }
+            } else if (!_leftEngine.activeInHierarchy)
+            {
+                _leftEngine.SetActive(true);
+            } else
+            {
+                _rightEngine.SetActive(true);
+            }
         }
 
         _isDamaging = false;

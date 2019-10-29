@@ -28,11 +28,21 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         SetupPowerupSpawnWeights();
+    }
 
+    public void StartSpawning()
+    {
+        StartCoroutine(StartSpawningRoutine());
+    }
+
+    private IEnumerator StartSpawningRoutine()
+    {
+        yield return new WaitForSeconds(3.0f);
         StartCoroutine(SpawnEnemiesRoutine());
         StartCoroutine(SpawnPowerupsRoutine());
     }
 
+    // Populate a lookup to correspond powerups with their weight (chance of appearing)
     private void SetupPowerupSpawnWeights()
     {
         _pwSpawnWeights = new Dictionary<int, List<int>>() { };
@@ -105,6 +115,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    // Get the next powerup based on weight (chance of appearing) and random number
     private int GetRandomPowerupIndex()
     {
         int randomNumber = Random.Range(0, _pwSpawnWeightTotal);
@@ -116,10 +127,10 @@ public class SpawnManager : MonoBehaviour
 
             if (randomNumber <= weight)
             {
-                var numOptions = _pwSpawnWeights[weight].Count();
-                if (numOptions > 1)
+                var totalOptions = _pwSpawnWeights[weight].Count();
+                if (totalOptions > 1)
                 {
-                    index = Random.Range(0, numOptions);
+                    index = Random.Range(0, totalOptions);
                 }
                 else
                 {

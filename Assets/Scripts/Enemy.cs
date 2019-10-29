@@ -6,33 +6,37 @@ public class Enemy : MonoBehaviour
 {
     [Header("General")]
     [SerializeField] private float _speed = 4.0f;
-    
-    private bool _isDamaging = false;
-
-    private Material _mat;
-    private Color _originalColor = Color.white;
 
     private Player _player;
     private UIManager _ui;
 
+    private Animator _anim;
+    private BoxCollider2D _collider;
+
     void Start()
     {
-        _player = FindObjectOfType<Player>();
+        _player = GameObject.Find("Player").GetComponent<Player>();
         if (_player == null)
         {
             Debug.Log("Player not found!");
         }
 
-        _ui = FindObjectOfType<UIManager>();
+        _ui = GameObject.Find("UICanvas").GetComponent<UIManager>();
         if (_ui == null)
         {
             Debug.Log("UI Manager not found!");
         }
 
-        _mat = GetComponent<SpriteRenderer>().material;
-        if (_mat != null)
+        _collider = GetComponent<BoxCollider2D>();
+        if (_collider == null)
         {
-            _originalColor = _mat.color;
+            Debug.Log(name + "'s Box Collider component not found!");
+        }
+
+        _anim = GetComponent<Animator>();
+        if (_anim == null)
+        {
+            Debug.Log(name + "'s Animator component not found!");
         }
     }
 
@@ -41,7 +45,7 @@ public class Enemy : MonoBehaviour
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
         float topBound = 7.0f;
-        float bottomBound = -5.27f;
+        float bottomBound = -6.5f;
         float leftBound = -8.0f;
         float rightBound = 8.0f;
 
@@ -58,33 +62,14 @@ public class Enemy : MonoBehaviour
         transform.position = new Vector3(xPos, yPos, 0.0f);
     }
 
-    IEnumerator DamageFlash()
-    {
-        if (_mat != null)
-        {
-            _mat.color = Color.red;
-            yield return new WaitForSeconds(0.1f);
-            _mat.color = _originalColor;
-        }
-    }
-
-    IEnumerator TakeDamageCoroutine()
-    {
-        _isDamaging = true;
-
-        StartCoroutine(DamageFlash());
-        yield return new WaitForSeconds(0.25f);
-
-        Destroy(this.gameObject);
-
-        _isDamaging = false;
-    }
-
     internal void TakeDamage()
     {
-        if (!_isDamaging)
+        if (_collider.enabled)
         {
-            StartCoroutine(TakeDamageCoroutine());
+            _collider.enabled = false;
+            _anim.SetTrigger("Death");
+            _speed = _speed / 2.0f;
+            Destroy(this.gameObject, _anim.GetCurrentAnimatorStateInfo(0).length);
         }
     }
 
@@ -93,7 +78,7 @@ public class Enemy : MonoBehaviour
         if (other.tag == "Player")
         {
             Player player = other.gameObject.GetComponent<Player>();
-            if (player != null && !_isDamaging)
+            if (player != null)
             {
                 player.TakeDamage();
                 TakeDamage();
@@ -102,9 +87,9 @@ public class Enemy : MonoBehaviour
         else if (other.tag == "Laser")
         {
             Laser laser = other.gameObject.GetComponent<Laser>();
-            if (laser != null && !_isDamaging)
+            if (laser != null)
             {
-                Destroy(laser.gameObject);
+                Destroy(other.gameObject);
                 if (_player != null)
                 {
                     _player.AddScore(10);
