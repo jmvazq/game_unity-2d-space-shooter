@@ -16,6 +16,7 @@ public class Laser : MonoBehaviour
         // Destroy when it goes off-screen
         if (transform.position.y > 6.87f)
         {
+            // First destroy laser container, if any (for example, with Triple Shot)
             if (transform.parent != null && transform.parent.tag != "Container")
             {
                 Destroy(transform.parent.gameObject);

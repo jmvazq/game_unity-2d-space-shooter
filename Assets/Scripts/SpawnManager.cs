@@ -108,7 +108,8 @@ public class SpawnManager : MonoBehaviour
             {
                 Vector3 posToSpawn = new Vector3(Random.Range(-8.0f, 8.0f), 7.8f, 0);
                 GameObject powerup = Instantiate(_powerups[randomIndex], posToSpawn, Quaternion.identity);
-            } else
+            }
+            else
             {
                 Debug.Log("Unspecified powerup!");
             }

@@ -36,7 +36,6 @@ public class Powerup : MonoBehaviour
             Player player = other.GetComponent<Player>();
             if (player != null)
             {
-                // TODO: add powerup to a queue if another is currently active or interrupt the current one
                 switch(_type)
                 {
                     case PowerupType.TripleShot:

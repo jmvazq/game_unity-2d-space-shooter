@@ -15,7 +15,8 @@ public class Explosion : MonoBehaviour
         if (_anim == null)
         {
             Debug.Log(name + "'s Animator component not found!");
-        } else
+        }
+        else
         {
             duration = _anim.GetCurrentAnimatorStateInfo(0).length;
         }

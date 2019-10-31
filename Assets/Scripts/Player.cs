@@ -60,7 +60,8 @@ public class Player : MonoBehaviour
         if (_sprite == null)
         {
             Debug.Log(name + "'s Sprite Renderer component is missing!");
-        } else
+        }
+        else
         {
             _originalColor = _sprite.material.color;
         }
@@ -153,23 +154,28 @@ public class Player : MonoBehaviour
         {
             _spawnManager.OnPlayerDeath();
             Destroy(this.gameObject, 0.1f);
-        } else
+        }
+        else
         {
-            // display random damaged engine or whichever is not active yet
+            // Handle lives indicator (damaged engines):
             if (_leftEngine.activeInHierarchy && _rightEngine.activeInHierarchy)
             {
+                // if neither is active, select left or right randomly
                 int random = UnityEngine.Random.Range(1, 3);
                 if (random == 1)
                 {
                     _leftEngine.SetActive(true);
-                } else
+                }
+                else
                 {
                     _rightEngine.SetActive(true);
                 }
-            } else if (!_leftEngine.activeInHierarchy)
+            }
+            else if (!_leftEngine.activeInHierarchy) // activate whichever's left
             {
                 _leftEngine.SetActive(true);
-            } else
+            }
+            else
             {
                 _rightEngine.SetActive(true);
             }
@@ -197,7 +203,8 @@ public class Player : MonoBehaviour
         if (_isTripleShotActive)
         {
             StopCoroutine(_lastTripleShotRoutine);
-        } else
+        }
+        else
         {
             _isTripleShotActive = true;
         }
@@ -217,7 +224,8 @@ public class Player : MonoBehaviour
         if (_isSpeedBoostActive)
         {
             StopCoroutine(_lastSpeedBoostRoutine);
-        } else
+        }
+        else
         {
             _isSpeedBoostActive = true;
             _speed *= _speedBoostMultiplier;
@@ -238,6 +246,7 @@ public class Player : MonoBehaviour
     {
         if (_isShieldActive)
         {
+            // TODO: stack-up Shield powerups (make them collectibles, up to 3)
             return;
         }
 
